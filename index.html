@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FireRoll - 幸运抽奖系统</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 头部区域 -->
+        <header class="header">
+            <h1 class="title">
+                <span class="fire-icon">🔥</span>
+                FireRoll 幸运抽奖
+            </h1>
+            <button class="settings-btn" id="settingsBtn">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path d="M12 15.5A3.5 3.5 0 0 1 8.5 12A3.5 3.5 0 0 1 12 8.5a3.5 3.5 0 0 1 3.5 3.5a3.5 3.5 0 0 1-3.5 3.5m7.43-2.53c.04-.32.07-.64.07-.97c0-.33-.03-.65-.07-.97l2.11-1.63c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65A.488.488 0 0 0 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.63c-.04.32-.07.65-.07.97c0 .33.03.65.07.97l-2.11 1.63c-.19.15-.24.42-.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2-3.46c.13-.22.07-.49-.12-.64l-2.11-1.63Z"/>
+                </svg>
+            </button>
+        </header>
+
+        <!-- 主体区域 -->
+        <main class="main-content">
+            <!-- 左侧：名单管理 -->
+            <section class="name-list-section">
+                <h2>参与名单</h2>
+                <div class="upload-area">
+                    <input type="file" id="fileInput" accept=".txt,.csv" hidden>
+                    <button class="upload-btn" id="uploadBtn">
+                        <svg width="24" height="24" viewBox="0 0 24 24">
+                            <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/>
+                        </svg>
+                        上传名单文件
+                    </button>
+                    <div class="upload-hint">支持 CSV、TXT 格式</div>
+                </div>
+
+                <div class="manual-input">
+                    <textarea id="nameInput" placeholder="手动输入名单，每行一个姓名"></textarea>
+                    <button class="add-btn" id="addNamesBtn">添加到名单</button>
+                </div>
+
+                <div class="name-list-container">
+                    <div class="list-header">
+                        <span>名单列表 (<span id="totalCount">0</span>人)</span>
+                        <button class="clear-btn" id="clearListBtn">清空</button>
+                    </div>
+                    <ul class="name-list" id="nameList"></ul>
+                </div>
+            </section>
+
+            <!-- 中间：抽奖展示 -->
+            <section class="lottery-section">
+                <div class="lottery-display" id="lotteryDisplay">
+                    <div class="display-content">
+                        <div class="rolling-names" id="rollingNames"></div>
+                        <div class="winner-display" id="winnerDisplay">
+                            <div class="ready-text">准备开始</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lottery-controls">
+                    <div class="draw-count">
+                        <label>本轮抽取人数：</label>
+                        <input type="number" id="drawCount" min="1" value="1">
+                    </div>
+                    <button class="draw-btn" id="drawBtn">
+                        <span class="btn-text">开始抽奖</span>
+                    </button>
+                    <button class="reset-btn" id="resetBtn">重置</button>
+                </div>
+            </section>
+
+            <!-- 右侧：中奖结果 -->
+            <section class="result-section">
+                <h2>中奖名单</h2>
+                <div class="result-header">
+                    <span>共 <span id="winnerCount">0</span> 人</span>
+                    <button class="export-btn" id="exportBtn">导出结果</button>
+                </div>
+                <ul class="winner-list" id="winnerList"></ul>
+            </section>
+        </main>
+    </div>
+
+    <!-- 设置弹窗 -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>抽奖设置</h3>
+                <button class="modal-close" id="closeModalBtn">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="effectToggle" checked>
+                        启用动画特效
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="soundToggle">
+                        启用音效
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="confettiToggle" checked>
+                        启用礼花效果
+                    </label>
+                </div>
+                <div class="setting-item">
+                    <label>滚动速度：</label>
+                    <input type="range" id="speedRange" min="50" max="500" value="100">
+                    <span id="speedValue">100</span>ms
+                </div>
+                <div class="setting-item">
+                    <label>
+                        <input type="checkbox" id="allowDuplicate">
+                        允许重复中奖
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="save-settings-btn" id="saveSettingsBtn">保存设置</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
