@@ -25,7 +25,7 @@ const DEFAULT_SETTINGS: LotterySettings = {
   backgroundBlur: 5,
   animationType: 'spin',
   fullscreenTitle: '🔥 FireRoll 幸运抽奖',
-  fullscreenSubtitle: '让幸运降临在你身边',
+  fullscreenSubtitle: 'By Chy1029',
 }
 
 // 动画配置
